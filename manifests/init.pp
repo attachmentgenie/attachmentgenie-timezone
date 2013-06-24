@@ -4,7 +4,7 @@ class timezone($zone='UTC') {
   }
 
   file { '/etc/timezone':
-    content => inline_template('<%= zone + "\n" %>'),
+    content => inline_template('<%= @zone + "\n" %>'),
   }
 
   exec { 'reconfigure-tzdata':
