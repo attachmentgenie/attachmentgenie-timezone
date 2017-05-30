@@ -1,6 +1,6 @@
 {
   "name": "attachmentgenie-timezone",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "Bram Vogelaar <bram@attachmentgenie.com>",
   "summary": "Puppet timezone Module",
   "license": "MIT",
