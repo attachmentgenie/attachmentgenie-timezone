@@ -1,6 +1,6 @@
 class timezone(
-  $zone='UTC',
-  $ensure='present',
+  String $zone='UTC',
+  Enum ['present','absent'] $ensure='present',
 ) {
   case $::osfamily {
     'debian': {
