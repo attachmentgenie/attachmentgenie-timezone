@@ -1,45 +1,20 @@
-class timezone(
-  $zone='UTC',
-  $ensure='present',
-) {
-  case $::osfamily {
-    'debian': {
-      $tzdata_package_name = 'tzdata'
-      exec { 'reconfigure-tzdata':
-        command     => '/usr/sbin/dpkg-reconfigure -f noninteractive tzdata',
-        subscribe   => File['/etc/timezone'],
-        require     => File['/etc/timezone'],
-        refreshonly => true,
-      }
-    }
-    'redhat': {
-      $tzdata_package_name = 'tzdata'
-      file { '/etc/localtime':
-        ensure  => 'present',
-        target  => "/usr/share/zoneinfo/${zone}",
-        require => Package[$tzdata_package_name],
-      }
-    }
-    'gentoo': {
-      $tzdata_package_name = 'sys-libs/timezone-data'
-      exec { 'reconfigure-timezone':
-        command     => '/usr/bin/emerge --config timezone-data',
-        subscribe   => File['/etc/timezone'],
-        require     => File['/etc/timezone'],
-        refreshonly => true,
-      }
-    }
-    default: {
-      fail("Unsupported osfamily ${::osfamily}")
-    }
-  }
-  package { $tzdata_package_name:
-    ensure => $ensure,
-  }
-
-  file { '/etc/timezone':
-    content => inline_template('<%= @zone + "\n" %>'),
-    require => Package[$tzdata_package_name],
-  }
-
+# Class to install and configure timezone.
+#
+# Use this module to install and configure timezone.
+#
+# @example Declaring the class
+#   include ::timezone
+#
+# @param default_timezone Timezone for this node.
+# @param package_name Name of package to install.
+# @param package_version Version of tzdata to install.
+class timezone (
+  String $default_timezone = $::timezone::params::default_timezone,
+  String $package_name = $::timezone::params::package_name,
+  String $package_version = $::timezone::params::package_version,
+) inherits timezone::params {
+  anchor { 'timezone::begin': }
+  -> class{ '::timezone::install': }
+  -> class{ '::timezone::config': }
+  -> anchor { 'timezone::end': }
 }
